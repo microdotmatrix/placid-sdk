@@ -1,4 +1,5 @@
 import { UserUploads } from "@/components/auth/user/uploads";
+import { buttonVariants } from "@/components/ui/button";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -13,6 +14,13 @@ export default async function Home() {
       {session ? (
         <div className="space-y-6">
           <p>Logged in as {session.user.name}</p>
+
+          <Link
+            href="/create"
+            className={buttonVariants({ variant: "default" })}
+          >
+            Create a new epitaph
+          </Link>
 
           <h4>Saved uploads:</h4>
           <UserUploads userId={session.user.id} />
