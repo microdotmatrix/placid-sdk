@@ -26,9 +26,22 @@ export default async function Home() {
           <UserUploads userId={session.user.id} />
         </div>
       ) : (
-        <div>
-          <p>Please sign in to create an epitaph</p>
-          <Link href="/auth/login">Login</Link>
+        <div className="flex flex-col gap-2">
+          <p>Please login or register to create an epitaph</p>
+          <div className="flex gap-2">
+            <Link
+              href="/auth/login"
+              className={buttonVariants({ variant: "default" })}
+            >
+              Login
+            </Link>
+            <Link
+              href="/auth/register"
+              className={buttonVariants({ variant: "secondary" })}
+            >
+              Register
+            </Link>
+          </div>
         </div>
       )}
     </div>
