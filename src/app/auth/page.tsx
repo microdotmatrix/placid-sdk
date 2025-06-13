@@ -1,5 +1,5 @@
 import { UserUploads } from "@/components/auth/user/uploads";
-import { UploadImage } from "@/components/media/upload-image";
+import { UploadImage } from "@/components/media/image-upload";
 import { Icon } from "@/components/ui/icon";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
