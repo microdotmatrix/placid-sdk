@@ -1,4 +1,3 @@
-// In a server component
 import { getUserUploads } from "@/lib/db/queries";
 import { UserThumbnails } from "./thumbnails";
 

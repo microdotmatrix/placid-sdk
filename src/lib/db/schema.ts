@@ -81,3 +81,21 @@ export const userUpload = pgTable("user_upload", {
     .$defaultFn(() => new Date())
     .notNull(),
 });
+
+export const userGeneratedImage = pgTable("user_generated_image", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  epitaphId: integer("epitaph_id").notNull(), // ID from the Placid API
+  templateId: text("template_id"), // Template ID used for generation
+  imageUrl: text("image_url"), // URL to access the generated image (optional, can be populated later)
+  metadata: json("metadata"), // For storing additional metadata about the generation
+  status: text("status").$defaultFn(() => "generated").notNull(), // e.g., 'generated', 'processed', 'failed'
+  createdAt: timestamp("created_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+  updatedAt: timestamp("updated_at")
+    .$defaultFn(() => new Date())
+    .notNull(),
+});

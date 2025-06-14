@@ -3,7 +3,7 @@
 import { utapi } from "@/lib/api/uploads";
 import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
-import { userUpload } from "@/lib/db/schema";
+import { userUpload, userGeneratedImage } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { revalidatePath, revalidateTag } from "next/cache";
 import { headers } from "next/headers";
@@ -64,7 +64,8 @@ export async function getEpitaphImage(id: number) {
 }
 
 export async function createEpitaphs(
-  formData: PlacidRequest
+  formData: PlacidRequest,
+  userId: string
 ): Promise<ActionState> {
   try {
     const templates = await fetchTemplates();
@@ -98,6 +99,28 @@ export async function createEpitaphs(
 
     console.log("Successful results", successfulResults);
     console.log("Epitaph IDs", epitaphIds);
+
+    // Store each generated image in the database
+    const dbInsertPromises = successfulResults.map((result, index) => {
+      if (result.status === "fulfilled") {
+        const template = templates.data[index];
+        return db.insert(userGeneratedImage).values({
+          id: crypto.randomUUID(),
+          userId: userId,
+          epitaphId: result.value.id,
+          templateId: template.uuid,
+          metadata: {
+            variables: variables,
+            templateName: template.title || 'Unknown template',
+            generatedAt: new Date().toISOString()
+          },
+        });
+      }
+      return Promise.resolve(); // Skip failed generations
+    });
+
+    // Execute all database insertions in parallel
+    await Promise.all(dbInsertPromises.filter(Boolean));
 
     return { result: epitaphIds.filter((id) => id !== null) as number[] };
   } catch (error) {

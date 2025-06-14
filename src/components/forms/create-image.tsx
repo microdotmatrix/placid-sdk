@@ -17,9 +17,11 @@ import { AnimatedInput } from "./animated-input";
 
 export function CreateImage({
   action,
+  userId,
   uploads,
 }: {
-  action: (formData: PlacidRequest) => Promise<ActionState>;
+  action: (formData: PlacidRequest, userId: string) => Promise<ActionState>;
+  userId: string;
   uploads: Upload[];
 }) {
   const [uploadComplete, setUploadComplete] = useState(false);
@@ -65,7 +67,7 @@ export function CreateImage({
         toast("Please select or upload a file");
         return;
       }
-      const result = await action(formData);
+      const result = await action(formData, userId);
       console.log(result);
       if (result.error) {
         setError(result.error);

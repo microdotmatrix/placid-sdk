@@ -86,8 +86,9 @@ export async function generateImage({
   const response = await fetch("https://api.placid.app/api/rest/images", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
       Authorization: `Bearer ${process.env.PLACID_PRIVATE_TOKEN}`,
+      "Content-Type": "application/json",
+      "X-RateLimit-Limit": "3", // limit generation to 3 per minute
     },
     body: JSON.stringify({
       template_uuid: templateId,

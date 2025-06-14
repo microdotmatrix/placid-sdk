@@ -2,9 +2,8 @@ import { CreateImage } from "@/components/forms/create-image";
 import { ImageResult } from "@/components/media/image-result";
 import { createEpitaphs, getEpitaphImage } from "@/lib/api/actions";
 import type { PlacidImage } from "@/lib/api/placid";
-import { auth } from "@/lib/auth";
+import { getSession } from "@/lib/auth/server";
 import { getUserUploads } from "@/lib/db/queries";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
@@ -23,15 +22,20 @@ export default async function Create({
       imageIds.map(async (id) => await getEpitaphImage(id))
     )) as PlacidImage[];
   }
-  const session = await auth.api.getSession({ headers: await headers() });
+  const { session } = await getSession();
   if (!session) redirect("/auth/login?redirectTo=/create");
 
-  const uploads = await getUserUploads(session.user.id);
+  const userId = session.user.id;
+  const uploads = await getUserUploads(userId);
 
   return (
     <div className="flex flex-col lg:flex-row items-center lg:items-start justify-center relative">
       <aside className="flex-none lg:flex-1/3 lg:sticky lg:top-48 mt-12 lg:mt-48 order-2 lg:order-1">
-        <CreateImage action={createEpitaphs} uploads={uploads} />
+        <CreateImage
+          action={createEpitaphs}
+          userId={userId}
+          uploads={uploads}
+        />
       </aside>
       <article className="flex-1 lg:flex-2/3 px-4 order-1 lg:order-2">
         <Suspense fallback={<div>Loading...</div>}>
